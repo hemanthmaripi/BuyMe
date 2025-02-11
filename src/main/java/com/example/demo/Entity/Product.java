@@ -10,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -37,18 +39,35 @@ public class Product {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
-	@Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "created_at")
+	@Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", name = "created_at", updatable = false)
 	private LocalDateTime created_at;
 
-	@Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE", name = "updated_at")
+	@Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP", name = "updated_at")
 	private LocalDateTime updated_at;
 
 	public Product() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
+	@PrePersist
+	public void prePersist() {
+		this.created_at = LocalDateTime.now();
+		this.updated_at = LocalDateTime.now();
+	}
 
+	@PreUpdate
+	public void preUpdate() {
+		this.updated_at = LocalDateTime.now();
+	}
+
+	// Getters and setters
+	public Integer getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Integer productId) {
+		this.productId = productId;
+	}
 
 	public String getName() {
 		return name;
@@ -106,41 +125,12 @@ public class Product {
 		this.updated_at = updated_at;
 	}
 
-
-
-	public Integer getProductId() {
-		return productId;
-	}
-
-
-
-	public void setProductId(Integer productId) {
-		this.productId = productId;
-	}
-
-
-	public Product(Integer productId, String name, String description, BigDecimal price, Integer stock,
-			Category category, LocalDateTime created_at, LocalDateTime updated_at) {
-		super();
-		this.productId = productId;
-		this.name = name;
-		this.description = description;
-		this.price = price;
-		this.stock = stock;
-		this.category = category;
-		this.created_at = created_at;
-		this.updated_at = updated_at;
-	}
-
-
-
+	// Constructor for new products
 	public Product(String name, String description, BigDecimal price, Integer stock, Category category) {
-		super();
 		this.name = name;
 		this.description = description;
 		this.price = price;
 		this.stock = stock;
 		this.category = category;
 	}
-
 }
